@@ -1,0 +1,237 @@
+\documentclass[aip,graphicx,sd, amsmath,amssymb]{revtex4-1}
+%\documentclass[aip,reprint]{revtex4-1}
+
+\begin{document}
+\section{Importance sampling}
+Major Reference: Frenkel\&Smit, Section 3.1.1
+
+\begin{enumerate}
+\item[\it{i})] \textbf{[Prepare generating distribution]} \\
+1. Evaluate short-time limit of RPMD flux-side correlation function at reactant asymptote $q^{\ddagger} = q^*$
+\begin{align}
+ \lim_{t \to 0^+} {\tilde{c}_{fs}}(\beta) &= k^{\rm QTST}(q^{\ddagger}, \beta) Q_r(\beta) =  \frac1{(2\pi \hbar)^n}  
+\int d\textbf{p}_0 d\textbf{q}_0 \hspace{2pt}  
+\rho_{\rm eq} \left(\textbf{p}_0, \textbf{q}_0 \right) \hspace{2pt} 
+\times \delta({\bar{q}_0- q^\ddagger}) \frac{\bar{p}_0}{m} \cdot  \hspace{2pt} h(\bar{p}_0), \nonumber \\
+\rho_{\rm eq} \left(\textbf{p}_0, \textbf{q}_0 \right) &= e^{-\beta_n H_n^{\rm iso} \left(\textbf{p}_0, \textbf{q}_0 \right)}.
+\end{align}
+The physical Hamiltonian is a one-dimensional Born-Oppenheimer object 
+\begin{align}
+\hat{H} = \frac{\hat{p}^2}{2m} + V(\hat{q})
+\end{align}
+and has a flat reactant asymptote 
+\begin{align}
+\lim_{q\to -\infty} V(q) = V_0.
+\end{align}
+The ring-polymer Hamiltonian is
+\begin{align}  \label{rpmdH}
+H_n^{\rm iso}(\textbf{p}, \textbf{q}) &= \sum_{\alpha=1}^n \frac{p_{\alpha}^2}{2m}  + U_{\text{spr}}(\textbf{q})   + \sum_{\alpha=1}^n V(q_{\alpha})
+%\textbf{H}_n^{\rm iso}(\textbf{p}, \textbf{q}) &= \sum_{\alpha=1}^n \frac{p_{\alpha}^2}{2m_n}  + U_{\text{spr}}(\textbf{q})   + \textbf{V}_n^{\rm iso}(\textbf{q})
+%\sum_{\alpha=1}^n V(q_{\alpha}), \nonumber \\
+\end{align} 
+with 
+\begin{align}
+U_{\text{spr}}(\textbf{q}) &=\frac12 \cdot  \frac{m}{\beta_n^2} \, \sum_{\alpha=1}^n   \left( q_{\alpha} - q_{\alpha+1} \right)^2.
+\end{align}
+
+2. Given reactant partition function
+\begin{align}
+Q_r = \left( \frac{m}{2 \pi \beta} \right)^{1/2} e^{-\beta V_0},
+\end{align}
+derive $k^{\rm QTST}(q^*, \beta)$.
+Similarly, derive the classical limit for QTST rate (with a general dividing surface $q^{\ddagger}$) by utilizing $V(q_\alpha) = V (\bar{q})$.
+%Note that 
+%\begin{align}
+%\int d\textbf{q}_0 \hspace{2pt} \delta(\bar{q}_0 - q^\ddagger )  e^{-\beta_n U_{\text{spr}}(\textbf{q}_0)}
+%= \left(\frac{m}{2\pi \beta \hbar^2} \right)^{1/2} \left(\frac{mn}{2\pi \beta \hbar^2} \right)^{-n/2}.
+%\end{align}
+
+\item[\it{ii})] \textbf{[Evaluate QTST rate]} \\
+Evaluate QTST rate (with a general dividing surface $q^{\ddagger}$) using importance sampling for a symmetrical Eckart barrier model 
+\begin{align}
+V(q) = {V_0} \left/ {\cosh^2 (q/q_0)}. \right. 
+\end{align}
+The potential mimics the surface of gas-phase H+$\text{H}_2$ reactive scattering with parameters $m=1061m_e$, $V_0=
+%0.425$ eV = $
+0.015618462$ Hartree and $q_0=0.734$ Bohr. 
+
+MC algorithm can be expressed as 
+\begin{align}
+ \langle \mathcal{Q} \rangle_{q^\ddagger} &=
+\int dq_1 dq_2 ... dq_n  \hspace{2pt} \delta(\bar{q}_0 - q^\ddagger )  e^{-\beta_n U_{\text{spr}}(\textbf{q}_0)}
+ \times \mathcal{Q}(\textbf{q}_0)   \nonumber \\
+ &=
+\int \sqrt{n} d\bar{q}_0 d\nu_2 ... d\nu_n  \hspace{2pt} \delta(\bar{q}_0 - q^\ddagger )  
+\prod_{k=2}^n \exp \left[ -\frac{mn}{2 \beta} \, \lambda_k \nu_k^2 \right]
+ \times \mathcal{Q}(\textbf{q}_0)    \nonumber \\
+ &=
+\int dq_1 dq_2 ... dq_n  \hspace{2pt} \delta(\bar{q}_0 - q^\ddagger ) 
+\prod_{k=2}^n \exp \left[ -\frac{mn}{2 \beta} \, \lambda_k \nu_k^2 \right]
+ \times \mathcal{Q}(\textbf{q}_0)
+\end{align}
+in discretized normal mode representation
+\begin{align}
+& \qquad \hspace{-300pt} \sum_{\alpha=1}^n  (q_\alpha - q_{\alpha+1})^2=\sum_{k=2}^n \lambda_k \nu_k^2, \qquad 
+\lambda_k= 2 \left[ 1- \cos \left( \frac{2 \pi \lfloor k/2 \rfloor }n \right) \right] = 4 \sin^2 \left( \frac{\pi \lfloor k/2 \rfloor }n \right),  \nonumber \\
+\begin{cases}
+&\nu_1=\frac{1}{\sqrt{n}} \sum_{\alpha=1}^n  q_\alpha, \qquad \nu_n=\frac{1}{\sqrt{n}} \sum_{\alpha=1}^n (-1)^\alpha   q_\alpha, \\
+&\nu_k=\frac{\sqrt{2}}{\sqrt{n}} \sum_{\alpha=1}^n \sin \left( \frac{2 \pi \alpha \lfloor k/2 \rfloor }n \right) q_\alpha, \qquad k \text{ is even}, \\
+&\nu_k=\frac{\sqrt{2}}{\sqrt{n}}  \sum_{\alpha=1}^n \cos \left( \frac{2 \pi \alpha \lfloor k/2 \rfloor }n \right) q_\alpha, \qquad k \text{ is odd}. \\
+\end{cases}
+\end{align}
+where notation $ \lfloor \cdot \rfloor$ represents a floor function. Free ring-polymer distribution can be naturally used as generating distribution.
+
+\item[\it{iii})] \textbf{[Improve statistical estimators]} \\
+Now consider calculating the temperature derivative (or potentially mass derivative) of QTST rate. \\
+(STILL WORKING HERE)
+ 
+\end{enumerate}
+
+% 
+%This section discusses the strategy to calculate stationary temperature $\beta_0$ with the expression
+%\begin{align} \label{statbeta}
+%E_0 = - \frac1{\tilde{c}_{fs}} \left. \frac{\partial \tilde{c}_{fs}}{\partial \beta} \right|_{\beta_0} , \qquad \beta_0 \in \mathbb{R}.
+%\end{align}
+%To make RHS of Eq. \ref{statbeta} a purely statistical quantity, reaction rate is approximated as the optimized quantum transition state rate,
+%\begin{align}  \label{qtst}
+%{\tilde{c}_{fs}}(\beta) \approx &\min_{q^\ddagger} \left[ k_{\rm QTST} (\beta, q^\ddagger) \right]  Q_r(\beta) \nonumber \\
+%=& \frac1{(2\pi \hbar)^n}  
+%\int d\textbf{p}_0 d\textbf{q}_0 \hspace{2pt}  
+%\rho_{\rm eq} \left(\textbf{p}_0, \textbf{q}_0 \right) \hspace{2pt} 
+%\times \delta({\bar{q}_0- q^\ddagger}) \frac{\bar{p}_0}{m} \cdot  \hspace{2pt} h(\bar{p}_0).
+%\end{align}
+%with
+%\begin{align}
+%\rho_{\rm eq}  \left(\textbf{p}_0, \textbf{q}_0 \right) 
+%% = & \hspace{2pt} {\rm tr_e} \left[ e^{-\beta \hat{H}} \right] 
+%= & {\rm tr_e} \left[ e^{-\beta_n \textbf{H}_n^{\rm iso} \left(\textbf{p}_0, \textbf{q}_0\right) }  \right] \nonumber \\
+%= & \hspace{2pt} e^{-\beta_n \textbf{p}_0^{\rm T} \textbf{p}_0  \left/ 2m \right.} \cdot
+%e^{-\beta_n  U_{\text{spr}}(\textbf{q}_0)  } 
+%\times \sum_{\gamma} e^{-\beta_n \varepsilon_\gamma^{\rm iso} \left(\textbf{p}_0, \textbf{q}_0\right) }.
+%\end{align}
+%From now on for conciseness, $q^\ddagger$ will represent the optimized position of dividing surface. We now separate the integration into momentum and position parts,
+%\begin{align} \label{pqsep}
+%%\langle k \rangle_{t \to 0^+}^{\rm micro} (E_0)  & =\frac1{2\pi i} \int_{\gamma-i\infty}^{\gamma+i\infty} d\beta  \hspace{2pt}  e^{\beta E_0}\hspace{2pt}2\pi \hbar \cdot \tilde{c}_{fs}(t \to 0^+) \nonumber \\
+%\tilde{c}_{fs}(\beta) 
+%& \approx  \left[  \frac1{(2\pi \hbar)^n}  \int d\textbf{p}_0 \hspace{2pt}  e^{-\beta_n \textbf{p}_0^{\rm T} \textbf{p}_0  \left/ 2m \right.} \cdot  \frac{\bar{p}_0}{m} \hspace{2pt} h({\bar{p}_0}) \right] \nonumber\\
+%&\qquad \hspace{100pt} \times 
+%\left[ \int d\textbf{q}_0 \hspace{2pt} e^{-\beta_n  U_{\text{spr}}(\textbf{q}_0)  }  \cdot 
+%%e^{-\beta_n  \sum_i V(q_i)} 
+%\mu(\textbf{q}_0)
+%\times \delta({\bar{q}_0- q^\ddagger}) \right] \nonumber \\
+%& =  \frac{\sqrt{n}}{2\pi \beta} \left(\frac{ mn}{2\pi \beta} \right)^{(n-1)/2}  \times c_Q
+%\end{align}
+%with
+%\begin{align}
+%\mu(\textbf{q}_0) &= \sum_{\gamma} e^{-\beta_n \varepsilon_\gamma^{\rm iso}\left(\textbf{p}_0, \textbf{q}_0\right) } \nonumber \\
+%&= {\rm tr_e} \left[ \prod_{\alpha=1}^n e^{-\beta_n \hat{V}(q_\alpha)} \right] 
+%=  {\rm tr_e} \left[ e^{-\beta_n \hat{V}(q_1)} e^{-\beta_n \hat{V}(q_2)} \cdots e^{-\beta_n \hat{V}(q_n)} \right].
+%\end{align}
+%As a result, Eq.~\ref{statbeta} becomes
+%\begin{align}
+%E_0 = \frac{n+1}{2\beta_0} - \frac1{c_Q} \left. \frac{\partial c_Q}{\partial \beta} \right|_{\beta_0}.
+%\end{align}
+%The next step is to determine the derivatives of $c_Q$. For general multi-level systems, we have 
+%\begin{align}
+%\frac{\partial c_Q}{\partial \beta} &=
+%\left\langle \frac{mn}{2 \beta^2} \sum_\alpha (q_\alpha-q_{\alpha+1})^2 \cdot \mu(\textbf{q}_0)  
+%+ \frac{\partial \mu(\textbf{q}_0)}{\partial \beta} \right\rangle_{ q^\ddagger} , \nonumber \\
+%\frac{\partial \mu(\textbf{q}_0)}{\partial \beta} &= -\frac1n  {\rm tr_e} \left[ \hat{V}(q_1)  e^{-\beta_n \hat{V}(q_1)} e^{-\beta_n \hat{V}(q_2)} \cdots e^{-\beta_n \hat{V}(q_n)} \right] \nonumber \\
+%&\hspace{60pt} -\frac1n  {\rm tr_e} \left[ e^{-\beta_n \hat{V}(q_1)}   \hat{V}(q_2)  e^{-\beta_n \hat{V}(q_2)} \cdots e^{-\beta_n \hat{V}(q_n)}   \right] \nonumber \\
+%&\hspace{90pt} - \cdots -\frac1n  {\rm tr_e} \left[ e^{-\beta_n \hat{V}(q_1)} e^{-\beta_n \hat{V}(q_2)} \cdots  \hat{V}(q_n) e^{-\beta_n \hat{V}(q_n)}   \right] 
+%\end{align}
+%%and
+%%\begin{align}
+%% \frac{\partial^2 c_Q}{\partial \beta^2}  &= \left\langle \left[ \frac{mn}{2 \beta^2} \sum_\alpha (q_\alpha-q_{\alpha+1})^2 \right]^2 \cdot \mu(\textbf{q}_0) +  \frac{mn}{ \beta^2} \sum_\alpha (q_\alpha-q_{\alpha+1})^2 \cdot  \frac{\partial \mu(\textbf{q}_0)}{\partial \beta} 
+%%- \frac{mn}{ \beta^3} \sum_\alpha (q_\alpha-q_{\alpha+1})^2 \cdot  \frac{\partial^2 \mu(\textbf{q}_0)}{\partial \beta^2}  \right
+%%\rangle_{q^\ddagger}
+%%\end{align}
+%where internal-modes average $\langle \mathcal{Q} \rangle_{q^\ddagger} $ is defined as
+%\begin{align}
+%\langle \mathcal{Q} \rangle_{q^\ddagger} &\equiv  \int d\textbf{q}_0 \hspace{2pt} \delta(\bar{q}_0 - q^\ddagger )  e^{-\beta_n U_{\text{spr}}(\textbf{q}_0)}
+%\times  \mathcal{Q}(\textbf{q}_0).
+%\end{align}
+%
+%It is possible to derive a Virial estimator for the stationary temperature. In other words, Euler's homogeneous function theorem can be applied to get rid of the spring term, i.e.
+%\begin{align}
+%U_{\text{spr}}(\textbf{q}) 
+%&=\frac12 \cdot  \frac{m}{\beta_n^2} \, \sum_{\alpha=1}^n   \left( q_{\alpha} - q_{\alpha+1} \right)^2 
+%= \frac12 \sum_{\alpha=1}^n q_\alpha \frac{\partial U_{\text{spr}}(\textbf{q}) }{\partial q_\alpha}.
+%\end{align}
+%As a result, integration by parts turns out to be
+%\begin{align}
+%& \left\langle \mu(\textbf{q}_0)  \cdot \frac{mn}{2 \beta^2} \sum_\alpha (q_\alpha-q_{\alpha+1})^2 \right\rangle_{q^\ddagger} \nonumber \\
+%=& \frac1{2n} \left\langle \mu(\textbf{q}_0)  \cdot  \sum_{\alpha=1}^n q_\alpha \frac{\partial U_{\text{spr}}(\textbf{q}) }{\partial q_\alpha}   \right\rangle_{q^\ddagger} \nonumber \\
+%=&  -\frac1{2 \beta} \int d\textbf{q}_0 \hspace{2pt} \delta(\bar{q}_0 - q^\ddagger ) \mu(\textbf{q}_0)   \cdot  \sum_{\alpha=1}^n q_\alpha \frac{\partial \exp \left[ -\beta_n U_{\text{spr}}(\textbf{q}) \right] }{\partial q_\alpha}  \nonumber \\
+%=&  \frac1{2 \beta} \int d\textbf{q}_0 \hspace{2pt} e^{ -\beta_n U_{\text{spr}}(\textbf{q})}
+%\cdot  \sum_{\alpha=1}^n \frac{\partial  }{\partial q_\alpha} \left[ q_\alpha \cdot  \delta(\bar{q}_0 - q^\ddagger ) \mu(\textbf{q}_0)    \right] \nonumber \\
+%=& \frac1{2 \beta} \int d\textbf{q}_0 \hspace{2pt} e^{ -\beta_n U_{\text{spr}}(\textbf{q})}
+%\cdot \left[
+%\delta(\bar{q}_0 - q^\ddagger ) \left(n \mu(\textbf{q}_0)  + \sum_\alpha q_\alpha \frac{\partial \mu(\textbf{q}_0)}{\partial q_\alpha}  \right)   
+%+   \mu(\textbf{q}_0)  \sum_\alpha q_\alpha \frac{\partial  \delta(\bar{q}_0 - q^\ddagger ) }{\partial  q_\alpha} \right]
+%\end{align}
+%The derivative of delta function is addressed by substituting in the relation
+%\begin{align}
+%\frac{\partial  \delta(\bar{q}_0 - q^\ddagger ) }{\partial  q_\alpha} 
+%= \frac{d \delta(\bar{q}_0 - q^\ddagger )}{d \bar{q}_0} \frac{\partial   \bar{q}_0 }{\partial  q_\alpha} 
+%= \frac1n \frac{d \delta(\bar{q}_0 - q^\ddagger )}{d \bar{q}_0}
+%\end{align}
+%followed by integration by parts
+%\begin{align}
+% &\int d\textbf{q}_0 \hspace{2pt} e^{ -\beta_n U_{\text{spr}}(\textbf{q})}  \cdot  \mu(\textbf{q}_0) \sum_\alpha q_\alpha \frac{\partial  \delta(\bar{q}_0 - q^\ddagger ) }{\partial  q_\alpha}  \nonumber \\
+%= &\int d\textbf{q}_0 \hspace{2pt} e^{ -\beta_n U_{\text{spr}}(\textbf{q})}  \cdot \mu(\textbf{q}_0)  \cdot  { \bar{q}_0} \frac{d \delta(\bar{q}_0 - q^\ddagger )}{d \bar{q}_0}  \nonumber \\
+%=& - \left\langle \left[ \mu(\textbf{q}_0)  +  { \bar{q}_0} \sum_\alpha \frac{\partial \mu(\textbf{q}_0)}{\partial q_\alpha} \right]  \delta(\bar{q}_0 - q^\ddagger ) \right\rangle_{q^\ddagger}.
+%\end{align}
+%Finally we have the estimator
+%\begin{align}  \label{stattempfl}
+%E = \frac{1}{\beta} - \left. { \left\langle 
+%\frac1{2\beta} \sum_\alpha \left( q_\alpha - \bar{q}_0 \right) \frac{\partial  \mu(\textbf{q}_0)}{\partial q_\alpha} + \frac{\partial \mu(\textbf{q}_0)}{\partial \beta}  \right\rangle_{q^\ddagger}} \right/ 
+%\left\langle \mu(\textbf{q}_0)  \right\rangle_{q^\ddagger}.
+%\end{align}
+%Especially at the adiabatic limit since $\mu=e^{-\beta_n  \sum_\alpha V(q_\alpha)}$, the last expression reduces to
+%%For single-level systems  we have the primitive estimator
+%%\begin{align} \label{pri1l}
+%%\frac{\partial c_Q}{\partial \beta} &= \int d\textbf{q}_0 e^{- m \sum_\alpha (q_\alpha-q_{\alpha+1})^2 /2 \beta_n} \cdot 
+%%e^{-\beta_n  \sum_\alpha V(q_\alpha)} \times \delta({\bar{q}_0- q^\ddagger}) \left[ \frac{mn}{2 \beta^2} \sum_\alpha (q_\alpha-q_{\alpha+1})^2 - \frac1n \sum_\alpha V(q_\alpha)\right] \nonumber \\
+%% &= \left\langle e^{-\beta_n  \sum_\alpha V(q_\alpha)} \cdot \left[ \frac{mn}{2 \beta^2} \sum_\alpha (q_\alpha-q_{\alpha+1})^2 - \frac1n \sum_\alpha V(q_\alpha) \right] \right\rangle_{q^\ddagger}
+%%\end{align}
+%%and similarly the second derivative
+%%\begin{align}
+%%\frac{\partial^2 \ln \hspace{2pt} \tilde{c}_{fs} }{\partial \beta^2 } &= 
+%%\left\langle e^{-\beta_n  \sum_\alpha V(q_\alpha)} \cdot \left\{
+%%\left[ \frac{mn}{2 \beta^2} \sum_\alpha (q_\alpha-q_{\alpha+1})^2 - \frac1n \sum_\alpha V(q_\alpha)\right]^2 - \frac{mn}{ \beta^3} \sum_\alpha (q_\alpha-q_{\alpha+1})^2 \right\}
+%%\right\rangle_{ q^\ddagger}.
+%%\end{align}
+%\begin{align} \label{stattemp1l}
+%E = \frac{1}{\beta} + \left. { \left\langle e^{-\beta_n  \sum_\alpha V(q_\alpha)} \cdot  
+%\left[ \frac1{2n} \sum_\alpha \left( q_\alpha - \bar{q}_0 \right) \frac{\partial V(q_\alpha)}{\partial q_\alpha} + \frac1n \sum_\alpha V(q_\alpha) \right] \right\rangle_{q^\ddagger}} \right/ 
+%\left\langle e^{-\beta_n  \sum_\alpha V(q_\alpha)}  \right\rangle_{q^\ddagger}.
+%\end{align}
+%
+%An attracting feature of Eq. \ref{stattempfl} is that it is connected to the result from classical transition state theory if the ring-polymer is forced to be contracted at high temperature. For example in one-level systems, Eq. \ref{stattemp1l} becomes
+%\begin{align}
+%\lim_{\rm classical} E_0 = \frac{1}{\beta_0} + V(q^\ddagger),
+%\end{align}
+%and recovers the result from 
+%\begin{align}
+%{\tilde{c}_{fs}^{\rm CTST}} = 1 / \left( 2 \pi \beta \hbar \right) \cdot \exp \left[ -\beta V(q^\ddagger) \right] 
+%\end{align}
+%and also the classical approximation gives
+%\begin{align}
+%\frac{\partial^2 \ln \hspace{2pt} {\tilde{c}_{fs}^{\rm CTST}}  }{\partial \beta^2 } = \frac1{\beta^2}.
+%\end{align}
+%Similarly for multi-level conditions, 
+%\begin{align}
+%{\tilde{c}_{fs}^{\rm CTST}} = \frac1{ 2 \pi \beta \hbar} \cdot 
+%\sum_\gamma e^{ -\beta V_\gamma (q^\ddagger)},
+%\end{align}
+%with $\gamma$ the index for adiabatic states and it leads to the relation
+%\begin{align}
+%E_0 = - \frac{\partial \ln \hspace{2pt} {\tilde{c}_{fs}^{\rm CTST}}  }{\partial \beta} &= \frac1\beta + 
+%\frac{\sum_\gamma V_\gamma \cdot e^{ -\beta V_\gamma (q^\ddagger)} }{\sum_\gamma e^{ -\beta V_\gamma (q^\ddagger)}}
+%\approx  \frac1\beta + V_{\rm min}(q^\ddagger),
+%\end{align}
+%which is the classical asymptotic expression of Eq. \ref{stattempfl}.
+
+
+\end{document}

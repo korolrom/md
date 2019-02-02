@@ -1,0 +1,47 @@
+\documentclass[aip,graphicx,sd, amsmath,amssymb]{revtex4-1}
+%\documentclass[aip,reprint]{revtex4-1}
+
+\begin{document}
+\section{Basic molecular dynamics}
+Text Reference: Frenkel\&Smit, Section 4.1 - 4.3, 6.1.1
+
+Code Reference: ./ExampleCode/tps\_integrator.f90
+
+\begin{enumerate}
+\item[\it{i})] \textbf{[Getting an integrator!]} \\
+1. Consider a one-dimensional harmonic oscillator (HO),
+\begin{align}
+H = \frac{p^2}{2m} + V(q), \quad V(q)=\frac12 m \omega^2 q^2
+\end{align}
+with $m=1$, $\omega=1$. Implement Euler, Verlet, velocity-Verlet integrator and propagate a trajectory $q(t)$, $v=\dot{q}(t)$ starting from a non-trivial initial condition, i.e. $p(0) \neq 0$ or $q(0) \neq 0$. Use $\Delta t=0.001$ for the integration step. Compare numerical result with the analytical one.
+
+2. Plot kinetic, potential and total energy along the trajectories. Check energy conservation along the trajectory by defining
+\begin{align}
+\bar{E} = \int  dt \hspace{2pt} E(t) \left/ \int dt \right.
+\end{align}
+and 
+\begin{align}
+\sigma_E^2 = \int  dt \hspace{2pt} \left| E(t)- \langle E \rangle \right|^2  \left/ \int dt \right.
+\end{align}
+Compare energy mean and variance from different integrators and time steps.
+
+3. Repeat the calculations for an asymmetrical Morse oscillator (MO)
+\begin{align}
+V(q) = D_e \left( 1- e^{-a q} \right)^2.
+\end{align}
+with $a=1$. Choose proper $D_e$ s.t. HO in {\it{i}})-1 is the second-order expansion of MO here. Quantitatively describe the difference between trajectories from two oscillators.
+
+\item[\it{ii})] \textbf{[From NVE to NVT ensemble]} \\
+1. (Static quantity) Simulate second moment of position 
+\begin{align}
+ \langle q^2 \rangle = \int dp dq  \hspace{2pt} e^{-\beta H} \times q^2
+\end{align}
+of the HO  in {\it{i}})-1 with Andersen thermostat at $\beta=1$. Experimenting the frequency of stochastic collisions in the thermostat to ensure a proper sampling. Compare numerical result with the analytical one.
+
+2. (Static quantity) Sample the distribution . Plot the histogram.
+
+3. (Dynamical quantity)
+
+\end{enumerate}
+
+\end{document}
