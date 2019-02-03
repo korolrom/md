@@ -13,3 +13,9 @@ def get_ke(p,m):
     return p**2/2/m
 def get_ham(p,q,omega,m):
     return get_pe(q,omega,m)+get_ke(p,m)
+
+def get_pe_Morse(q,alpha,de):
+    return de*(1-np.exp(-alpha*q))
+
+def get_ham_Morse(p,q,alpha,de,m):
+    return get_pe_Morse(q,alpha,de)+get_ke(p,m)

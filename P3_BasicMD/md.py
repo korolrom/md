@@ -5,9 +5,15 @@ import num_int as num
 import SHO as sho
 #input parameters:
 m=1.
-omega=1.
 dt=1e-1
 t=10.
+morseTag=1
+if morseTag: #Morse
+    alpha=1.
+    de=1.
+    omega=alpha**2*de
+else:
+    omega=1.
 
 #future sampler
 def sample_q():
@@ -22,24 +28,29 @@ e=sho.get_ham(p0,q0,omega,m)
 #Analytical solution for harmonic oscillator
 amp=np.sqrt(2*e/m)/omega
 phi=np.arcsin(q0/amp)
-da=-omega**2
+def da(q):
+    return -omega**2*q
+def daMorse(q):
+    return 2*alpha*de*(np.exp(-alpha*q)-1)
 AnalPQ=np.array([sho.anal_p(amp,omega,m,phi,t,dt), sho.anal_q(amp,omega,m,phi,t,dt)])
 AnalE=np.array([sho.get_ke(AnalPQ[0,:],m),sho.get_pe(AnalPQ[1,:],omega,m)])
 
 #Numerical integration of EoM to get trajectories
-PQ=np.array([AnalPQ, num.Euler(p0,q0,t,dt,m,da),num.Verlet(p0,q0,t,dt,m,da),
+if morseTag: #Morse
+    PQ=np.array([AnalPQ, num.Euler(p0,q0,t,dt,m,daMorse),num.Verlet(p0,q0,t,dt,m,daMorse),
+            num.vVerlet(p0,q0,t,dt,m,daMorse),num.Beeman(p0,q0,t,dt,m,daMorse)])
+else:
+    PQ=np.array([AnalPQ, num.Euler(p0,q0,t,dt,m,da),num.Verlet(p0,q0,t,dt,m,da),
             num.vVerlet(p0,q0,t,dt,m,da),num.Beeman(p0,q0,t,dt,m,da)])
-#print(np.shape(PQ))
 
-#get the energies on the trajectory
-E=np.moveaxis(np.array([sho.get_ke(PQ[:,0,:],m),sho.get_pe(PQ[:,1,:],omega,m)]),1,0)
-#print(np.shape(E))
-#print(np.shape(PQ))
+#Get the energies on the trajectory
+if morseTag: #Morse
+    E=np.moveaxis(np.array([sho.get_ke(PQ[:,0,:],m),sho.get_pe_Morse(PQ[:,1,:],alpha,de)]),1,0)
+else:
+    E=np.moveaxis(np.array([sho.get_ke(PQ[:,0,:],m),sho.get_pe(PQ[:,1,:],omega,m)]),1,0)
 
 #Compute global energy conservation and the standard deviation in E
 Ebar=np.cumsum(np.sum(E,axis=1),axis=-1)/(np.arange(int(t/dt))+1)
-print(np.shape(Ebar))
-print(np.shape((np.sum(E,axis=1)-Ebar)**2))
 Esigma=np.cumsum((np.sum(E,axis=1)-Ebar)**2,axis=-1)/(np.arange(int(t/dt))+1)
 
 # Plots of p and q with time, energies with time
@@ -49,7 +60,7 @@ fig = plt.figure()
 subj=1
 for item in [PQ,E]:
     axes_1 = fig.add_subplot(1, 2, subj)
-    for i in range(n):
+    for i in range(n):#[0,4]:
         plt.plot(np.arange(0,t,dt),item[i,0,:],Style[i][0])
         plt.plot(np.arange(0,t,dt),item[i,1,:],Style[i][1])
         if subj==2:
@@ -58,6 +69,9 @@ for item in [PQ,E]:
             plt.plot(np.arange(0,t,dt),np.sqrt(Esigma[i,:]),Style[i][3])
     subj=subj+1
 plt.show()
+
+#print(np.shape(E))
+#print(np.shape(PQ))
 #print(p0,q0)
 
 
